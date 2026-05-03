@@ -23,19 +23,19 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
-            text-align: center;
         }
         .container {
-            max-width: 350px;
+            max-width: 360px;
             width: 100%;
-            background: rgba(255,255,255,0.95);
+            background: white;
             border-radius: 48px;
-            padding: 40px 24px;
+            padding: 32px 24px 40px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            text-align: center;
         }
         .logo {
             font-size: 80px;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
         h1 {
             font-size: 28px;
@@ -43,31 +43,66 @@
             margin-bottom: 8px;
             color: #FF6600;
         }
-        .desc {
-            color: #555;
+        .sub {
+            color: #666;
+            font-size: 14px;
             margin-bottom: 32px;
-            font-size: 15px;
         }
-        .install-btn {
-            background: #FF6600;
-            color: white;
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 16px;
             border: none;
             border-radius: 60px;
-            padding: 16px 32px;
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 600;
-            width: 100%;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
+            transition: transform 0.1s;
+            text-align: center;
+            text-decoration: none;
         }
-        .install-btn:active {
+        .btn:active {
             transform: scale(0.97);
         }
-        /* Скрываем всё это в standalone-режиме (при запуске из PWA) */
+        .btn-primary {
+            background: #FF6600;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .btn-secondary {
+            background: #f2f2f7;
+            color: #FF6600;
+            border: 1px solid #ddd;
+        }
+        .btn-chrome {
+            background: #4285F4;
+            color: white;
+        }
+        .divider {
+            margin: 20px 0;
+            font-size: 12px;
+            color: #aaa;
+            position: relative;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: #ddd;
+        }
+        .divider::before { left: 0; }
+        .divider::after { right: 0; }
+        .note {
+            font-size: 12px;
+            color: #888;
+            margin-top: 20px;
+        }
         @media (display-mode: standalone) {
             body {
-                background: white; /* чтобы не мелькало перед редиректом */
+                background: white;
             }
             .container {
                 display: none;
@@ -79,57 +114,139 @@
     <div class="container">
         <div class="logo">🍣</div>
         <h1>Русалочка Суши</h1>
-        <div class="desc">Установите приложение для быстрого доступа</div>
-        <button class="install-btn" id="installBtn">📲 Установить</button>
+        <div class="sub">Установите приложение на телефон</div>
+
+        <div id="androidSection">
+            <button class="btn btn-primary" id="installBtn">📲 Установить (Android)</button>
+            <button class="btn btn-chrome" id="openChromeBtn">🌐 Открыть в Chrome</button>
+        </div>
+
+        <div class="divider">или</div>
+
+        <button class="btn btn-secondary" id="iosInstructionsBtn">📱 Инструкция для iPhone</button>
+
+        <div class="note">
+            После установки — нажимайте на иконку на рабочем столе и сразу попадайте на сайт.
+        </div>
+    </div>
+
+    <!-- Модалка для iOS -->
+    <div id="iosModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(8px); z-index:200; justify-content:center; align-items:center;">
+        <div style="background:white; border-radius:28px; max-width:300px; width:85%; padding:24px 20px 28px; text-align:center;">
+            <h3 style="margin-bottom:16px;">📱 Установить на iPhone</h3>
+            <div style="background:#f2f2f7; border-radius:14px; padding:12px; margin:16px 0; text-align:left;">
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;"><span style="background:#007aff; color:white; width:24px; height:24px; border-radius:12px; display:inline-flex; align-items:center; justify-content:center;">1</span> Нажмите «Поделиться» ⎕</div>
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;"><span style="background:#007aff; color:white; width:24px; height:24px; border-radius:12px; display:inline-flex; align-items:center; justify-content:center;">2</span> Прокрутите вниз → «На экран Домой»</div>
+                <div style="display:flex; align-items:center; gap:12px;"><span style="background:#007aff; color:white; width:24px; height:24px; border-radius:12px; display:inline-flex; align-items:center; justify-content:center;">3</span> Нажмите «Добавить»</div>
+            </div>
+            <button id="closeModalBtn" style="background:#007aff; color:white; border:none; border-radius:40px; padding:12px 24px; font-size:17px; font-weight:600; width:100%; cursor:pointer;">Закрыть</button>
+        </div>
     </div>
 
     <script>
-        // Функция редиректа на сайт
-        function redirectToSite() {
+        // Функция редиректа на сайт (при запуске из установленного PWA)
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        if (isStandalone) {
             window.location.href = 'https://rusalochkasushi.ru/';
         }
 
-        // Проверяем, запущено ли приложение как PWA (без браузерной строки)
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
-                             window.navigator.standalone === true;
+        // Определяем браузер и ОС
+        const ua = navigator.userAgent;
+        const isAndroid = /Android/i.test(ua);
+        const isIOS = /iPhone|iPad|iPod/i.test(ua);
+        const isChrome = /Chrome/i.test(ua) && !/Edg/i.test(ua);
+        
+        const installBtn = document.getElementById('installBtn');
+        const openChromeBtn = document.getElementById('openChromeBtn');
+        const iosInstructionsBtn = document.getElementById('iosInstructionsBtn');
+        const iosModal = document.getElementById('iosModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
 
-        if (isStandalone) {
-            // Если уже установлено и запущено с иконки — сразу редирект на сайт
-            redirectToSite();
+        // Показываем/скрываем кнопки
+        if (isIOS) {
+            // На iOS убираем кнопки для Android, оставляем только инструкцию
+            document.getElementById('androidSection').style.display = 'none';
+            iosInstructionsBtn.style.display = 'block';
+        } else if (isAndroid) {
+            iosInstructionsBtn.style.display = 'block'; // тоже показываем инструкцию для iOS? на андроид не нужно, но пусть висит как справочно?
+            // Лучше показать кнопку установки и "Открыть в Chrome", инструкцию для iOS скрыть
+            iosInstructionsBtn.style.display = 'none';
         } else {
-            // Показываем кнопку установки
-            let deferredPrompt = null;
-            const installBtn = document.getElementById('installBtn');
+            // Десктоп
+            iosInstructionsBtn.style.display = 'none';
+        }
 
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                installBtn.style.display = 'block';
-            });
+        // Переменная для beforeinstallprompt (только Chrome Android)
+        let deferredPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'block';
+        });
 
-            installBtn.addEventListener('click', async () => {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    if (outcome === 'accepted') {
-                        // После установки приложение закроется, при следующем запуске сработает редирект
-                        installBtn.innerText = '✅ Установлено';
-                        installBtn.disabled = true;
-                    }
-                    deferredPrompt = null;
-                } else {
-                    // iOS или десктоп
-                    alert('Нажмите "Поделиться" → "На экран Домой"');
+        // Кнопка установки (для Chrome Android)
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    installBtn.innerText = '✅ Установлено';
+                    installBtn.disabled = true;
                 }
-            });
-
-            // Если страница открыта в браузере и не в standalone, но нет beforeinstallprompt (iOS)
-            // покажем кнопку, и по нажатию будет инструкция.
-            if (!deferredPrompt && /iPhone|iPad|iPod/.test(navigator.userAgent)) {
-                installBtn.onclick = () => {
-                    alert('Нажмите "Поделиться" (квадрат со стрелкой) → "На экран Домой"');
-                };
+                deferredPrompt = null;
+            } else if (isAndroid && !isChrome) {
+                alert('Рекомендуем использовать Chrome. Нажмите на три точки → "Открыть в Chrome", затем повторите установку.');
+            } else if (isAndroid && isChrome && !deferredPrompt) {
+                alert('Установка уже доступна. Если кнопка не появилась, обновите страницу.');
+            } else {
+                alert('Для установки используйте Chrome на Android.');
             }
+        });
+
+        // Кнопка "Открыть в Chrome" (для Android)
+        openChromeBtn.addEventListener('click', () => {
+            if (isAndroid) {
+                // Пытаемся открыть текущий URL в Chrome через intent
+                const currentUrl = window.location.href;
+                // Если уже в Chrome, не нужно
+                if (isChrome) {
+                    alert('Вы уже в Chrome. Нажмите "Установить" выше.');
+                } else {
+                    // Отправляем пользователя в Chrome
+                    window.location.href = `intent://${window.location.host}${window.location.pathname}${window.location.search}#Intent;scheme=https;package=com.android.chrome;end`;
+                    // Запасной вариант: показать инструкцию
+                    setTimeout(() => {
+                        alert('Не удалось открыть автоматически. Скопируйте ссылку и откройте вручную в Chrome.\n\n' + currentUrl);
+                    }, 500);
+                }
+            } else {
+                alert('Эта кнопка только для Android');
+            }
+        });
+
+        // Инструкция для iOS
+        iosInstructionsBtn.addEventListener('click', () => {
+            if (isIOS) {
+                iosModal.style.display = 'flex';
+            } else {
+                alert('На iPhone откройте этот сайт в Safari, нажмите «Поделиться» → «На экран Домой»');
+            }
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            iosModal.style.display = 'none';
+        });
+        iosModal.addEventListener('click', (e) => {
+            if (e.target === iosModal) iosModal.style.display = 'none';
+        });
+
+        // Если на Android и не Chrome — сразу предложим открыть в Chrome
+        if (isAndroid && !isChrome) {
+            setTimeout(() => {
+                if (confirm('Для установки приложения рекомендуем использовать Chrome. Открыть в Chrome?')) {
+                    openChromeBtn.click();
+                }
+            }, 500);
         }
     </script>
 </body>
