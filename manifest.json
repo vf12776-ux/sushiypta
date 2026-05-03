@@ -1,12 +1,11 @@
 {
   "name": "Русалочка Суши",
   "short_name": "Русалочка",
-  "description": "Честные суши и атмосфера старого Токио в Москве",
+  "description": "Суши и роллы с доставкой",
   "start_url": "/",
   "display": "standalone",
   "theme_color": "#FF8C00",
   "background_color": "#FF8C00",
-  "orientation": "portrait-primary",
   "icons": [
     {
       "src": "icon-192.png",

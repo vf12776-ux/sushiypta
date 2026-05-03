@@ -15,242 +15,122 @@
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: #FF8C00;
-            overflow: hidden;
-            height: 100vh;
-            position: relative;
-        }
-
-        /* iframe на весь экран */
-        .webview {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-            z-index: 1;
-        }
-
-        /* Кнопка установки — стилизована под iOS/Android */
-        .install-btn {
-            position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            color: #FF8C00;
-            border: none;
-            border-radius: 60px;
-            padding: 14px 32px;
-            font-size: 18px;
-            font-weight: 600;
+            background: linear-gradient(135deg, #FF8C00 0%, #FF6600 100%);
+            min-height: 100vh;
             display: flex;
             align-items: center;
-            gap: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-            cursor: pointer;
-            z-index: 20;
-            transition: all 0.2s ease;
-            backdrop-filter: blur(4px);
-            background: rgba(255, 255, 255, 0.95);
-        }
-
-        .install-btn:hover {
-            transform: translateX(-50%) scale(1.02);
-            background: white;
-        }
-
-        /* Модальное окно для iOS */
-        .ios-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            z-index: 100;
             justify-content: center;
-            align-items: center;
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        .ios-modal.active {
-            display: flex;
-        }
-
-        .ios-modal-content {
-            background: white;
-            border-radius: 28px;
-            max-width: 300px;
-            width: 85%;
-            padding: 24px 20px 28px;
+            padding: 20px;
             text-align: center;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            animation: modalFadeIn 0.2s ease;
         }
-
-        @keyframes modalFadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+        .container {
+            max-width: 350px;
+            width: 100%;
+            background: rgba(255,255,255,0.95);
+            border-radius: 48px;
+            padding: 40px 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
         }
-
-        .ios-modal h3 {
-            font-size: 22px;
-            font-weight: 600;
+        .logo {
+            font-size: 80px;
             margin-bottom: 16px;
-            color: #1c1c1e;
         }
-
-        .ios-modal p {
-            font-size: 16px;
-            line-height: 1.4;
-            color: #3a3a3c;
-            margin-bottom: 24px;
+        h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: #FF6600;
         }
-
-        .steps {
-            background: #f2f2f7;
-            border-radius: 14px;
-            padding: 12px;
-            margin-bottom: 24px;
-            text-align: left;
-        }
-
-        .steps div {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
+        .desc {
+            color: #555;
+            margin-bottom: 32px;
             font-size: 15px;
         }
-
-        .steps div:last-child {
-            margin-bottom: 0;
-        }
-
-        .steps span {
-            background: #007aff;
-            color: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 12px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .close-modal {
-            background: #007aff;
+        .install-btn {
+            background: #FF6600;
             color: white;
             border: none;
-            border-radius: 40px;
-            padding: 12px 24px;
-            font-size: 17px;
+            border-radius: 60px;
+            padding: 16px 32px;
+            font-size: 18px;
             font-weight: 600;
             width: 100%;
             cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
         }
-
-        /* Скрываем кнопку в standalone-режиме PWA */
+        .install-btn:active {
+            transform: scale(0.97);
+        }
+        /* Скрываем всё это в standalone-режиме (при запуске из PWA) */
         @media (display-mode: standalone) {
-            .install-btn {
+            body {
+                background: white; /* чтобы не мелькало перед редиректом */
+            }
+            .container {
                 display: none;
             }
         }
     </style>
 </head>
 <body>
-    <iframe class="webview" src="https://rusalochkasushi.ru/" loading="eager"></iframe>
-    <button class="install-btn" id="installBtn">
-        📲 Установить приложение
-    </button>
-
-    <div class="ios-modal" id="iosModal">
-        <div class="ios-modal-content">
-            <h3>📱 Установить на iPhone/iPad</h3>
-            <div class="steps">
-                <div><span>1</span> Нажмите «Поделиться» ⎕</div>
-                <div><span>2</span> Прокрутите вниз и нажмите «На экран Домой»</div>
-                <div><span>3</span> Нажмите «Добавить» в правом верхнем углу</div>
-            </div>
-            <button class="close-modal" id="closeModalBtn">Закрыть</button>
-        </div>
+    <div class="container">
+        <div class="logo">🍣</div>
+        <h1>Русалочка Суши</h1>
+        <div class="desc">Установите приложение для быстрого доступа</div>
+        <button class="install-btn" id="installBtn">📲 Установить</button>
     </div>
 
     <script>
-        // PWA установка
-        let deferredPrompt = null;
-        const installBtn = document.getElementById('installBtn');
-        const iosModal = document.getElementById('iosModal');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-
-        // Закрыть модалку
-        closeModalBtn.addEventListener('click', () => {
-            iosModal.classList.remove('active');
-        });
-
-        // Закрыть по клику вне контента
-        iosModal.addEventListener('click', (e) => {
-            if (e.target === iosModal) {
-                iosModal.classList.remove('active');
-            }
-        });
-
-        // Проверка на iOS
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-        // Проверка, запущено ли уже как PWA
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
-                            window.navigator.standalone === true;
-
-        if (isStandalone) {
-            installBtn.style.display = 'none';
+        // Функция редиректа на сайт
+        function redirectToSite() {
+            window.location.href = 'https://rusalochkasushi.ru/';
         }
 
-        // Слушаем beforeinstallprompt (Android)
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBtn.style.display = 'flex';
-        });
+        // Проверяем, запущено ли приложение как PWA (без браузерной строки)
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                             window.navigator.standalone === true;
 
-        installBtn.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                // Android: вызываем системный диалог
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                deferredPrompt = null;
-                if (outcome === 'accepted') {
-                    installBtn.style.display = 'none';
+        if (isStandalone) {
+            // Если уже установлено и запущено с иконки — сразу редирект на сайт
+            redirectToSite();
+        } else {
+            // Показываем кнопку установки
+            let deferredPrompt = null;
+            const installBtn = document.getElementById('installBtn');
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installBtn.style.display = 'block';
+            });
+
+            installBtn.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        // После установки приложение закроется, при следующем запуске сработает редирект
+                        installBtn.innerText = '✅ Установлено';
+                        installBtn.disabled = true;
+                    }
+                    deferredPrompt = null;
+                } else {
+                    // iOS или десктоп
+                    alert('Нажмите "Поделиться" → "На экран Домой"');
                 }
-            } else if (isIOS) {
-                // iOS: показываем инструкцию
-                iosModal.classList.add('active');
-            } else {
-                // Остальные случаи (десктоп, др. браузеры) — инструкция
-                alert('Нажмите на три точки в браузере и выберите "Установить приложение" или "Добавить на главный экран"');
-            }
-        });
+            });
 
-        // Если приложение уже установлено — скрываем кнопку
-        window.addEventListener('appinstalled', () => {
-            installBtn.style.display = 'none';
-            deferredPrompt = null;
-        });
+            // Если страница открыта в браузере и не в standalone, но нет beforeinstallprompt (iOS)
+            // покажем кнопку, и по нажатию будет инструкция.
+            if (!deferredPrompt && /iPhone|iPad|iPod/.test(navigator.userAgent)) {
+                installBtn.onclick = () => {
+                    alert('Нажмите "Поделиться" (квадрат со стрелкой) → "На экран Домой"');
+                };
+            }
+        }
     </script>
 </body>
 </html>
