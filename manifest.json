@@ -1,0 +1,24 @@
+{
+  "name": "Русалочка Суши",
+  "short_name": "Русалочка",
+  "description": "Честные суши и атмосфера старого Токио в Москве",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#FF8C00",
+  "background_color": "#FF8C00",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
